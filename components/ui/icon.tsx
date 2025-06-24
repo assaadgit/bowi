@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { 
-  Menu, 
-  Search, 
-  Upload, 
-  Settings, 
-  User, 
-  Bell, 
-  Home, 
+import React from "react";
+import {
+  Menu,
+  Search,
+  Upload,
+  Settings,
+  User,
+  Bell,
+  Home,
   LogOut,
   Eye,
   EyeOff,
@@ -34,9 +34,18 @@ import {
   BarChart,
   Edit,
   Layout,
-  Crown
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+  Crown,
+  Bot,
+  Key,
+  Folder,
+  Globe,
+  PanelRightOpen,
+  PanelLeftOpen,
+  MessageSquarePlus,
+  Play,
+  Pause,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const icons = {
   menu: Menu,
@@ -71,34 +80,39 @@ const icons = {
   barChart: BarChart,
   edit: Edit,
   layout: Layout,
-  crown: Crown
+  crown: Crown,
+  bot: Bot,
+  key: Key,
+  folder: Folder,
+  globe: Globe,
+  "panel-right-open": PanelRightOpen,
+  "panel-left-open": PanelLeftOpen,
+  "message-square-plus": MessageSquarePlus,
+  play: Play,
+  pause: Pause,
 };
 
 interface IconProps {
   name: keyof typeof icons;
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
   className?: string;
 }
 
-export function Icon({ name, size = 'md', className }: IconProps) {
+export function Icon({ name, size = "md", className }: IconProps) {
   const IconComponent = icons[name];
-  
+
   if (!IconComponent) {
     console.warn(`Icon "${name}" not found`);
     return null;
   }
 
   const sizes = {
-    xs: 'w-3 h-3',
-    sm: 'w-4 h-4',
-    md: 'w-5 h-5',
-    lg: 'w-6 h-6',
-    xl: 'w-8 h-8'
+    xs: "w-3 h-3",
+    sm: "w-4 h-4",
+    md: "w-5 h-5",
+    lg: "w-6 h-6",
+    xl: "w-8 h-8",
   };
 
-  return (
-    <IconComponent 
-      className={cn(sizes[size], className)} 
-    />
-  );
+  return <IconComponent className={cn(sizes[size], className)} />;
 }

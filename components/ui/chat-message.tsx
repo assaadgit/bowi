@@ -1,35 +1,48 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Icon } from '@/components/ui/icon';
-import { Progress } from '@/components/ui/progress';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { Icon } from "@/components/ui/icon";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+
+type MessageVariant = "user" | "proxy" | "system";
 
 interface ChatMessageProps {
-  role: 'user' | 'agent';
-  content: string;
-  isStatus?: boolean;
+  variant: MessageVariant;
+  content: React.ReactNode;
   timestamp?: string;
+  subVariant?: "loading" | "completed" | "clarification";
 }
 
-export function ChatMessage({ role, content, isStatus = false, timestamp }: ChatMessageProps) {
+export function ChatMessage({
+  variant,
+  content,
+  timestamp,
+  subVariant,
+}: ChatMessageProps) {
   const handleCopy = () => {
-    navigator.clipboard.writeText(content);
+    if (typeof content === "string") {
+      navigator.clipboard.writeText(content);
+    }
   };
 
-  if (role === 'user') {
+  if (variant === "user") {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[80%] bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-3 relative group">
+        <div className="group relative max-w-[80%] rounded-2xl rounded-tr-sm bg-primary px-4 py-3 text-primary-foreground">
           <p className="text-sm leading-relaxed">{content}</p>
           <button
             onClick={handleCopy}
-            className="absolute -left-8 top-1/2 transform -translate-y-1/2 p-1.5 rounded-lg bg-surface hover:bg-surface/80 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute -left-8 top-1/2 -translate-y-1/2 rounded-lg bg-surface p-1.5 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-surface/80"
           >
-            <Icon name="copy" size="sm" className="text-muted-foreground hover:text-foreground" />
+            <Icon
+              name="file"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground"
+            />
           </button>
           {timestamp && (
-            <div className="text-xs text-primary-foreground/70 mt-1">
+            <div className="mt-1 text-xs text-primary-foreground/70">
               {timestamp}
             </div>
           )}
@@ -38,43 +51,51 @@ export function ChatMessage({ role, content, isStatus = false, timestamp }: Chat
     );
   }
 
-  return (
-    <div className="flex justify-start">
-      <div className="max-w-[80%] flex gap-3">
-        {/* Agent Avatar */}
-        <div className="flex-shrink-0 w-8 h-8 bg-surface rounded-full flex items-center justify-center mt-1">
-          <Icon name="bot" size="sm" className="text-muted-foreground" />
+  if (variant === "proxy") {
+    return (
+      <div className="flex justify-start">
+        <div className="flex max-w-[80%] gap-3">
+          <div className="mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-surface">
+            <Icon name="bot" size="sm" className="text-muted-foreground" />
+          </div>
+          <div className="rounded-2xl rounded-tl-sm bg-surface px-4 py-3">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+              {content}
+            </p>
+            {timestamp && (
+              <div className="mt-2 text-xs text-muted-foreground">
+                {timestamp}
+              </div>
+            )}
+          </div>
         </div>
-        
-        {/* Message Content */}
-        <div className={cn(
-          "rounded-2xl rounded-tl-sm px-4 py-3",
-          isStatus ? "bg-primary/10 border border-primary/20" : "bg-surface"
-        )}>
-          {isStatus && (
-            <div className="flex items-center gap-2 mb-3">
-              <Icon name="zap" size="sm" className="text-primary" />
-              <span className="text-sm font-medium text-primary">Proxy</span>
-            </div>
+      </div>
+    );
+  }
+
+  if (variant === "system") {
+    return (
+      <div className="flex justify-center">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          {subVariant === "loading" && (
+            <Icon name="refresh" className="animate-spin" />
           )}
-          
-          <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
-            {content}
-          </p>
-          
-          {isStatus && (
-            <div className="mt-3">
-              <Progress value={65} className="h-2" />
-            </div>
-          )}
-          
-          {timestamp && (
-            <div className="text-xs text-muted-foreground mt-2">
-              {timestamp}
+          {subVariant === "completed" && <Icon name="checkCircle" />}
+          <span>{content}</span>
+          {subVariant === "clarification" && (
+            <div className="ml-2 flex gap-2">
+              <Button size="sm" variant="outline">
+                Yes
+              </Button>
+              <Button size="sm" variant="outline">
+                No
+              </Button>
             </div>
           )}
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  return null;
 }

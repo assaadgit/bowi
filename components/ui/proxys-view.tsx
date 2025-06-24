@@ -1,155 +1,76 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
-import { Screenshot } from '@/lib/types';
-import { ArrowLeft, ArrowRight, Monitor, Image as ImageIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-interface ProxysViewProps {
-  screenshots: Screenshot[];
-}
-
-export function ProxysView({ screenshots }: ProxysViewProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const handlePrevious = () => {
-    setCurrentIndex(prev => Math.max(0, prev - 1));
-  };
-
-  const handleNext = () => {
-    setCurrentIndex(prev => Math.min(screenshots.length - 1, prev + 1));
-  };
-
-  if (!screenshots || screenshots.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-96 bg-surface rounded-lg border border-border">
-        <Monitor className="h-16 w-16 text-muted-foreground mb-4" />
-        <h3 className="text-lg font-semibold text-foreground mb-2">No Screenshots Available</h3>
-        <p className="text-muted-foreground text-center max-w-md">
-          Screenshots will appear here as Proxy navigates through websites and performs tasks.
-        </p>
-      </div>
-    );
-  }
-
-  const currentScreenshot = screenshots[currentIndex];
-
+export function ProxysView() {
   return (
-    <div className="space-y-4">
-      {/* Main Screenshot Display */}
-      <div className="relative bg-surface rounded-lg border border-border overflow-hidden">
-        <div className="aspect-video relative">
-          <img
-            src={currentScreenshot.imageUrl}
-            alt={`Screenshot ${currentIndex + 1}`}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              // Fallback for broken images
-              const target = e.target as HTMLImageElement;
-              target.style.display = 'none';
-              const parent = target.parentElement;
-              if (parent) {
-                parent.innerHTML = `
-                  <div class="flex items-center justify-center h-full bg-muted">
-                    <div class="text-center">
-                      <div class="h-12 w-12 mx-auto mb-2 text-muted-foreground">
-                        <svg fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                        </svg>
-                      </div>
-                      <p class="text-sm text-muted-foreground">Screenshot unavailable</p>
-                    </div>
-                  </div>
-                `;
-              }
-            }}
-          />
-          
-          {/* Screenshot Info Overlay */}
-          {currentScreenshot.description && (
-            <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-3">
-              <p className="text-sm">{currentScreenshot.description}</p>
-            </div>
-          )}
+    <div className="bg-surface rounded-lg border border-border overflow-hidden">
+      {/* Browser Header */}
+      <div className="h-11 flex items-center px-4 bg-muted/50 border-b border-border">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-red-500"></div>
+          <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+          <div className="w-3 h-3 rounded-full bg-green-500"></div>
+        </div>
+        <div className="flex-1 text-center text-sm font-medium text-muted-foreground">
+          Proxy's View
+        </div>
+        <div className="w-12"></div>
+      </div>
+
+      {/* Address Bar */}
+      <div className="h-12 flex items-center px-4 border-b border-border">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Icon name="chevronLeft" size="sm" />
+          <Icon name="chevronRight" size="sm" />
+          <Icon name="refresh" size="sm" className="ml-2" />
+        </div>
+        <div className="flex-1 mx-4 bg-input rounded-md h-8 flex items-center px-3">
+          <Icon name="globe" size="sm" className="text-muted-foreground mr-2" />
+          <span className="text-sm text-foreground">https://www.google.com</span>
+        </div>
+        <Icon name="settings" size="sm" className="text-muted-foreground" />
+      </div>
+
+      {/* Content Area */}
+      <div className="p-8 bg-background aspect-video overflow-y-auto">
+        <div className="prose prose-sm dark:prose-invert max-w-none">
+          <h1>Welcome to the Web</h1>
+          <p>
+            This is a simulated view of what the AI is seeing. It can navigate websites,
+            read content, and interact with elements just like a human user.
+          </p>
+          <p>
+            Here are some example elements:
+          </p>
+          <ul>
+            <li><a href="#">This is a link</a></li>
+            <li><code>This is some code</code></li>
+            <li><strong>This is bold text</strong></li>
+          </ul>
+          <button className="bg-primary text-primary-foreground px-4 py-2 rounded-md">
+            Example Button
+          </button>
         </div>
       </div>
 
-      {/* Control Bar */}
-      <div className="flex items-center justify-between bg-surface rounded-lg border border-border p-4">
-        {/* Step Indicator */}
+      {/* Controls */}
+      <div className="flex items-center justify-between p-4 border-t border-border bg-muted/50">
+        <span className="text-sm text-muted-foreground">Step 1 of 1</span>
         <div className="flex items-center gap-2">
-          <ImageIcon className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium text-foreground">
-            Step {currentIndex + 1} of {screenshots.length}
-          </span>
-          {currentScreenshot.timestamp && (
-            <span className="text-xs text-muted-foreground">
-              • {new Date(currentScreenshot.timestamp).toLocaleTimeString()}
-            </span>
-          )}
-        </div>
-
-        {/* Navigation Controls */}
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handlePrevious}
-            disabled={currentIndex === 0}
-            className="h-8 w-8"
-          >
-            <ArrowLeft className="h-4 w-4" />
+          <Button variant="outline" size="sm" disabled>
+            <Icon name="chevronLeft" size="sm" className="mr-2" />
+            Previous Step
           </Button>
-          
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleNext}
-            disabled={currentIndex === screenshots.length - 1}
-            className="h-8 w-8"
-          >
-            <ArrowRight className="h-4 w-4" />
+          <Button variant="outline" size="sm">
+            Next Step
+            <Icon name="chevronRight" size="sm" className="ml-2" />
           </Button>
         </div>
       </div>
-
-      {/* Screenshot Timeline */}
-      {screenshots.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          {screenshots.map((screenshot, index) => (
-            <button
-              key={screenshot.stepNumber}
-              onClick={() => setCurrentIndex(index)}
-              className={`flex-shrink-0 w-20 h-12 rounded border-2 overflow-hidden transition-all ${
-                index === currentIndex
-                  ? 'border-primary ring-2 ring-primary/20'
-                  : 'border-border hover:border-primary/50'
-              }`}
-            >
-              <img
-                src={screenshot.imageUrl}
-                alt={`Thumbnail ${index + 1}`}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const parent = target.parentElement;
-                  if (parent) {
-                    parent.innerHTML = `
-                      <div class="flex items-center justify-center h-full bg-muted">
-                        <svg class="h-4 w-4 text-muted-foreground" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                        </svg>
-                      </div>
-                    `;
-                  }
-                }}
-              />
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

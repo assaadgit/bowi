@@ -1,70 +1,70 @@
-'use client';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Button } from "./button";
+import { Menu } from "lucide-react";
+import Link from "next/link";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./accordion";
 
-import React from 'react';
-import Link from 'next/link';
-import { Icon } from './icon';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from './sheet';
-
-interface NavigationItem {
-  name: string;
-  href: string;
-  icon: string;
-  isPro: boolean;
-}
-
-interface NavigationSheetProps {
-  isOpen: boolean;
-  onClose: () => void;
-  navigationItems: NavigationItem[];
-  isProUser: boolean;
-  onProFeatureClick: (e: React.MouseEvent, path: string) => void;
-}
-
-export function NavigationSheet({
-  isOpen,
-  onClose,
-  navigationItems = [],
-  isProUser,
-  onProFeatureClick,
-}: NavigationSheetProps) {
+export function NavigationSheet() {
   return (
-    <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="left" className="w-80">
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <Menu />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left">
         <SheetHeader>
-          <SheetTitle className="flex items-center space-x-2">
-            <Icon name="home" size="md" className="text-primary" />
-            <span>Convergence</span>
+          <SheetTitle>
+            <Link href="/" className="mr-6 flex items-center space-x-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-box"
+              >
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
+              <span className="font-bold sm:inline-block">Convergence</span>
+            </Link>
           </SheetTitle>
         </SheetHeader>
-        
-        <nav className="mt-8 space-y-2">
-          {navigationItems.map((item) => (
-            <div key={item.name}>
-              {item.isPro && !isProUser ? (
-                <button
-                  onClick={(e) => {
-                    onProFeatureClick(e, item.href);
-                    onClose();
-                  }}
-                  className="w-full flex items-center space-x-3 px-3 py-2 text-left text-muted-foreground hover:text-foreground hover:bg-surface rounded-lg transition-colors"
-                >
-                  <Icon name={item.icon as any} size="sm" />
-                  <span className="flex-1">{item.name}</span>
-                  <Icon name="lock" size="xs" className="text-muted-foreground" />
-                </button>
-              ) : (
-                <Link
-                  href={item.href}
-                  onClick={onClose}
-                  className="flex items-center space-x-3 px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-surface rounded-lg transition-colors"
-                >
-                  <Icon name={item.icon as any} size="sm" />
-                  <span>{item.name}</span>
-                </Link>
-              )}
-            </div>
-          ))}
-        </nav>
+        <div className="mt-6 flex flex-col gap-y-4">
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger>Proxy</AccordionTrigger>
+              <AccordionContent className="flex flex-col gap-y-4 pl-2">
+                <Link href="#">Proxy</Link>
+                <Link href="#">Use Cases</Link>
+                <Link href="#">Company</Link>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          <Button variant="outline" asChild>
+            <Link href="#">Enterprise Waitlist</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/login">Login</Link>
+          </Button>
+        </div>
       </SheetContent>
     </Sheet>
   );

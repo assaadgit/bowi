@@ -1,98 +1,68 @@
-'use client';
-
-import React from 'react';
-import { useUser } from '@auth0/nextjs-auth0/client';
-import Link from 'next/link';
-import { Icon } from './icon';
-import { UserProfileAvatar } from './user-profile-avatar';
-import { ThemeToggle } from './theme-toggle';
-import { NavigationSheet } from './navigation-sheet';
+import Link from "next/link";
+import { ThemeToggle } from "./theme-toggle";
+import { Button } from "./button";
+import { NavigationSheet } from "./navigation-sheet";
 
 export function SiteHeader() {
-  const { user, isLoading } = useUser();
-
-  const handleProfileClick = () => {
-    console.log('Profile clicked');
-  };
-
-  const handleSettingsClick = () => {
-    console.log('Settings clicked');
-  };
-
-  const handleSignOutClick = () => {
-    window.location.href = '/api/auth/logout';
-  };
-
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/dashboard" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <Icon name="home" size="md" className="text-primary" />
-            <span className="text-xl font-bold text-foreground">
-              Convergence
-            </span>
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <div className="md:hidden">
+            <NavigationSheet />
+          </div>
+          <Link href="/" className="flex items-center space-x-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-box"
+            >
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            <span className="font-bold">Convergence</span>
           </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link 
-              href="/dashboard/templates" 
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          <nav className="hidden items-center space-x-6 text-sm font-medium md:flex">
+            <Link
+              href="#"
+              className="text-foreground/60 transition-colors hover:text-foreground/80"
             >
-              My Templates
+              Proxy
             </Link>
-            <Link 
-              href="/dashboard/automations" 
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            <Link
+              href="#"
+              className="text-foreground/60 transition-colors hover:text-foreground/80"
             >
-              Automations
+              Use Cases
             </Link>
-            <Link 
-              href="/dashboard/files" 
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            <Link
+              href="#"
+              className="text-foreground/60 transition-colors hover:text-foreground/80"
             >
-              Files
-            </Link>
-            <Link 
-              href="/dashboard/template-hub" 
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Template Hub
+              Company
             </Link>
           </nav>
-
-          {/* Right Side Actions */}
-          <div className="flex items-center space-x-3">
-            {/* Theme Toggle */}
-            <ThemeToggle />
-
-            {/* User Profile or Loading */}
-            {isLoading ? (
-              <div className="h-8 w-8 bg-muted rounded-full animate-pulse" />
-            ) : user ? (
-              <UserProfileAvatar
-                initials={user.name?.split(' ').map(n => n[0]).join('') || 'U'}
-                name={user.name || 'User'}
-                email={user.email || ''}
-                onProfileClick={handleProfileClick}
-                onSettingsClick={handleSettingsClick}
-                onSignOutClick={handleSignOutClick}
-              />
-            ) : (
-              <Link href="/api/auth/login">
-                <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                  Sign In
-                </button>
-              </Link>
-            )}
-
-            {/* Mobile Menu */}
-            <div className="md:hidden">
-              <NavigationSheet />
-            </div>
-          </div>
+        </div>
+        <div className="flex items-center space-x-2">
+          <ThemeToggle />
+          <Button
+            variant="outline"
+            asChild
+            className="ml-2 hidden sm:inline-flex"
+          >
+            <Link href="#">Enterprise Waitlist</Link>
+          </Button>
+          <Button asChild className="ml-2">
+            <Link href="/login">Login</Link>
+          </Button>
         </div>
       </div>
     </header>

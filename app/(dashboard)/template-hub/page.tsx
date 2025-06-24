@@ -1,122 +1,126 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getPublicTemplates } from '@/lib/api';
-import { PublicTemplate } from '@/lib/types';
-import { TemplateCard } from '@/components/ui/template-card';
-import { Icon } from '@/components/ui/icon';
-import { EmptyState } from '@/components/ui/empty-state';
-import { CardSkeleton } from '@/components/ui/skeleton-loader';
-import { toast } from 'sonner';
+import React, { useState } from "react";
+import { TemplateCard } from "@/components/ui/template-card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
 
-const categories = ['All', 'Business', 'Marketing', 'Research'];
+const mockTemplates = [
+  {
+    title: "Sales Outreach",
+    description: "A template for reaching out to new sales leads.",
+    author: "By Convergence",
+    isPro: false,
+    icon: "briefcase",
+  },
+  {
+    title: "Marketing Campaign",
+    description: "A comprehensive template for planning a marketing campaign.",
+    author: "By Convergence",
+    isPro: true,
+    icon: "megaphone",
+  },
+  {
+    title: "Data Entry Automation",
+    description: "Automate your data entry tasks with this template.",
+    author: "By Convergence",
+    isPro: false,
+    icon: "database",
+  },
+  {
+    title: "Customer Support",
+    description: "A template for handling customer support inquiries.",
+    author: "By Convergence",
+    isPro: false,
+    icon: "users",
+  },
+  {
+    title: "Social Media Plan",
+    description: "Plan your social media content with this template.",
+    author: "By Convergence",
+    isPro: true,
+    icon: "thumbs-up",
+  },
+  {
+    title: "Content Creation",
+    description: "A template for managing your content creation workflow.",
+    author: "By Convergence",
+    isPro: false,
+    icon: "file-text",
+  },
+];
+
+const categories = ["All", "Sales", "Marketing", "Data Entry"];
 
 export default function TemplateHubPage() {
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const { data: templates, isLoading, isError, error } = useQuery({
-    queryKey: ['publicTemplates', selectedCategory],
-    queryFn: () => getPublicTemplates(selectedCategory === 'All' ? undefined : selectedCategory),
+  const filteredTemplates = mockTemplates.filter((template) => {
+    const matchesCategory =
+      selectedCategory === "All" || template.title.includes(selectedCategory);
+    const matchesSearch = template.title
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
   });
 
-  const handleTemplateClick = (template: PublicTemplate) => {
-    if (template.isPro) {
-      toast('Pro template selected', {
-        description: `"${template.title}" requires a Pro subscription.`,
-        action: {
-          label: 'Upgrade',
-          onClick: () => {
-            toast.success('Redirecting to upgrade page...');
-          },
-        },
-      });
-    } else {
-      toast.success('Template selected', {
-        description: `Using "${template.title}" by ${template.author}`,
-      });
-    }
-    console.log('Template clicked:', template.id);
-  };
+  return (
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="space-y-4">
+        <div>
+          <h1 className="mb-2 text-3xl font-bold text-foreground">
+            Template Hub
+          </h1>
+          <p className="text-muted-foreground">
+            Discover and use templates to automate your work.
+          </p>
+        </div>
 
-  if (isError) {
-    return (
-      <div className="min-h-screen bg-background p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 text-center">
-            <Icon name="alertCircle" size="lg" className="text-destructive mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">Failed to Load Templates</h3>
-            <p className="text-muted-foreground">
-              {error instanceof Error ? error.message : 'An unexpected error occurred'}
-            </p>
+        {/* Search and Filter */}
+        <div className="flex flex-col gap-4 md:flex-row">
+          <div className="relative flex-grow">
+            <Icon
+              name="search"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            />
+            <Input
+              type="search"
+              placeholder="Search for templates..."
+              className="w-full pl-10"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </Button>
+            ))}
           </div>
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="space-y-4">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Template Hub</h1>
-            <p className="text-muted-foreground">
-              Discover and use templates created by the community
-            </p>
-          </div>
-
-          {/* Category Filter */}
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  selectedCategory === category
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-surface text-muted-foreground hover:text-foreground hover:bg-surface/80'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Templates Grid */}
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <CardSkeleton key={index} />
-            ))}
-          </div>
-        ) : templates && templates.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {templates.map((template) => (
-              <TemplateCard
-                key={template.id}
-                title={template.title}
-                author={template.author}
-                usageCount={template.usageCount}
-                date={template.date}
-                category={template.category}
-                iconName={template.iconName}
-                isPro={template.isPro}
-                onClick={() => handleTemplateClick(template)}
-              />
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            icon="search"
-            title="No templates found"
-            description="Try selecting a different category or check back later for new templates from the community."
-            actionLabel="Browse All Categories"
-            onAction={() => setSelectedCategory('All')}
+      {/* Templates Grid */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {filteredTemplates.map((template, index) => (
+          <TemplateCard
+            key={index}
+            title={template.title}
+            description={template.description}
+            author={template.author}
+            isPro={template.isPro}
+            icon={template.icon}
+            onClick={() => {}}
           />
-        )}
+        ))}
       </div>
     </div>
   );
