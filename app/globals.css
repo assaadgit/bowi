@@ -52,33 +52,41 @@
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
   body {
-    @apply bg-background text-foreground;
     font-family: "Inter", sans-serif;
   }
 
   /* Typography scale */
   h1 {
-    @apply text-4xl font-bold tracking-tight;
+    font-size: 2.25rem; /* 36px */
+    line-height: 2.5rem; /* 40px */
+    font-weight: 700;
+    letter-spacing: -0.025em;
   }
 
   h2 {
-    @apply text-2xl font-bold tracking-tight;
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem; /* 32px */
+    font-weight: 700;
+    letter-spacing: -0.025em;
   }
 
   h3 {
-    @apply text-xl font-semibold tracking-tight;
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.75rem; /* 28px */
+    font-weight: 600;
+    letter-spacing: -0.025em;
   }
 
   p {
-    @apply text-base leading-7;
+    font-size: 1rem; /* 16px */
+    line-height: 1.75rem; /* 28px */
   }
 
   .text-label {
-    @apply text-sm font-normal;
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.25rem; /* 20px */
+    font-weight: 400;
   }
 }
 
